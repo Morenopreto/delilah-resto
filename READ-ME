@@ -1,0 +1,44 @@
+//////////DELILAH RESTO
+.Creado por: MORENO PRETO
+
+Hola! Bienvenido a Deliah Resto.
+
+Antes de iniciar DELILAH RESTO usted debe considerar las siguientes pautas:
+    1) En caso de no tener instalado XAMPP, debe instalar el mismo.
+-link de instalador:
+    https://www.apachefriends.org/es/index.html
+    
+    2) Una vez instalado XAMPP, inicie la aplicacion.
+    3) Dentro de XAMPP, en las filas de APACHE y MySQL presione START.
+    4) Una vez presionado START en ambas filas, sobre la fila de MySQL presione ADMIN
+    esto abrira el administrador de bases de datos MySQL en su navegador.
+    
+    --CREACION DE BASE DE DATOS
+    1) Dentro del administrador, en la barre de navegacion lateral, va a encontrar varias opciones.
+    Presione en la primer opcion llamada NUEVA.
+    2) Dentro de la opcion NUEVA, en la barra superior, presione la segunda opcion llamada SQL.
+    3) Una vez dentro de SQL, abra el archivo DB.sql que se encuentra junto al archivo READ-ME
+    4) Copie todo lo que se encuentra dentro de este archivo y vuelva al navegador donde debera pegar lo copiado anteriormente.
+    5) Con los queries pegados, presione el boton CONTINUAR que se encuentra debajo a la derecha.
+    6) Si no tuvo ningun error en la ejecucion, la base de datos y sus tablas pertinentes fueron creadas exitosamente.
+    7) Tenga en cuenta que el usuario administrador posee USUARIO: admin y CONTRASENA: admin.
+
+    --PRUEBA DE API & ENDPOINTS - POSTMAN
+    1) Usted debe contar con la version de escritorio de POSTMAN para poder realizar los request de prueba.
+    2) Una vez abierta la aplicacion de POSTMAN, en el menu de arriba a la izquierda, presione el boton IMPORT(importar).
+    3) Seleccione la opcion LINK y pegue el link que le fue propuesto en la entrega.
+     el link deberia tener un formato similar a: https://www.getpostman.com/collections/1235454s445a
+    4) Presione continuar y luego importar coleccion.
+    5) Ya puede probar los ENDPOINTS provistos. 
+    6) Para aquellos ENDPOINTS que requieran de un token, el mismo sera provisto automaticamente una vez realizado el 
+    inicio de sesion mediante el ENDPOINT correspondiente.
+
+    -- EJECUCION DELILAH RESTO 
+    1) Dentro de VS CODE abra una nueva terminal.
+    2) Una vez dentro de la carpeta donde se encuentra el proyecto DELILAH RESTO corra el codigo npm start
+    3) Revise la consola, deberia leer App corriendo en puerto 3000.
+    4) En caso de verificar correctamente la opcion anterior, ya se encuentra listo para probar DELILAH RESTO.
+
+
+    -- CONSIDERACIONES
+    . Para un uso mas rapido de los ENDPOINTS desde la creacion de la BD y sus respectivas tablas, se agregaron TRES productos.
