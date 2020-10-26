@@ -1,11 +1,9 @@
 // const { EILSEQ } = require('constants');
 const express = require('express');
 const app = express();
-const sequelize = require('./seq-conexion');
-// const jwt = require('jsonwebtoken')
-// const tokenKey = 'twce5yv65u76865vd467bf857n';
+const sequelize = require('./seq-conexion.js');
 let infoToken;
-const {jwt, tokenKey} = require('./jwt');
+const {jwt, tokenKey} = require('./jwt.js');
 const port = 3000;
 
 
@@ -77,10 +75,7 @@ const validacionAdmin = (req, res, next) => {
 //////// PATH ----------- USUARIOS -----------------------
 app.post('/usuarios', validacionExistencia, (req, res) => {
     const { nombrecompleto, mail, direccion, telefono, administrador, usuario, contrasena } = req.body;
-    // console.log(`nombre ${nombre} usuarios ${usuario} admin ${administrador} apellido ${apellido} `)
-    // if(administrador <0|| administrador>1 || typeof(administrador) != 'number'){
-    //     res.status(400).json('Administrador debe ser booleano (0 o 1)');
-    // }else
+
     if (!nombrecompleto || !mail || !direccion || !usuario || !contrasena || !telefono) {
         res.status(400).json('Los campos Nombre y Apellido, mail, direccion, Contrasena y Nombre de usuario son obligatorios.');
     } else {
@@ -131,11 +126,6 @@ app.post('/usuarios/login', (req, res) => {
             res.status(404).json('El usuario ingresado no existe.')
         }
 
-
-        // let usuarios = await sequelize.query('SELECT * FROM usuarios', { type: sequelize.QueryTypes.SELECT })
-        // usuarios.forEach(element => {
-
-        // });
     })()
 
 })
@@ -145,10 +135,7 @@ app.get('/usuarios/:usuario_id', validacionjwt, (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const verificarToken = jwt.verify(token, tokenKey);
 
-    // console.log(req.params.usuario_id)
-    // const token = req.headers.authorization.split(' ')[1];
-    // const verificarToken = jwt.verify(token, tokenKey);
-    // console.log(req.usuario.usuario);
+   
     if (verificarToken.usuario_id != req.params.usuario_id) {
         return res.status(400).json('No tiene acceso al parametro que busca, revise su informacion de inicio de sesion.')
     } else {
@@ -310,7 +297,6 @@ app.post('/pedidos', validacionjwt, (req, res) => {
                 { type: sequelize.QueryTypes.SELECT });
             let direccion = direccionObj[0].direccion
 
-            //en el de abajo se elimino precio total
             await sequelize.query('INSERT INTO `pedidos` (metodo_pago, direccion, usuario_id ) VALUES ( ?, ?, ?)',
                 {
                     replacements: [metodo_pago, direccion, verificarToken.usuario_id],
@@ -391,7 +377,6 @@ app.get("/pedidos/:order_id", validacionjwt, async (req, res) => {
     const order_id = req.params.order_id;
     try {
 
-        // 'SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_idINNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_idINNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_idINNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_idINNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = 1 GROUP BY pedidos.order_id',
         if (verificarToken.administrador === 0) {
 
             const pedido = await sequelize.query('SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_id INNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_id INNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_id INNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_id INNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = ? AND usuarios.usuario_id = ? GROUP BY pedidos.order_id',
