@@ -55,6 +55,7 @@ INSERT INTO `estados` (estado_pedido) VALUES ('confirmado');
 INSERT INTO `estados` (estado_pedido) VALUES ('preparando');
 INSERT INTO `estados` (estado_pedido) VALUES ('enviado');
 INSERT INTO `estados` (estado_pedido) VALUES ('entregado');
+INSERT INTO `estados` (estado_pedido) VALUES ('eliminado');
 
 -- CREACION DE PRODUCTOS PARA PRUEBA DE ENDOPOINTS
 INSERT INTO `productos` (nombre_producto, descripcion, precio ,Img_url,active) VALUES ('Chesseburger', 'hamburguesa simple con cheddar', 250 ,'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fstatic.onecms.io%2Fwp-content%2Fuploads%2Fsites%2F9%2F2019%2F09%2FCheeseburger-Cheeseburger-Deals-FT-Blog0919.jpg', 1);

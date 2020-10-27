@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const sequelize = require('./seq-conexion.js');
 let infoToken;
-const {jwt, tokenKey} = require('./jwt.js');
+const { jwt, tokenKey } = require('./jwt.js');
 const port = 3000;
 
 
@@ -135,7 +135,7 @@ app.get('/usuarios/:usuario_id', validacionjwt, (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const verificarToken = jwt.verify(token, tokenKey);
 
-   
+
     if (verificarToken.usuario_id != req.params.usuario_id) {
         return res.status(400).json('No tiene acceso al parametro que busca, revise su informacion de inicio de sesion.')
     } else {
@@ -305,7 +305,7 @@ app.post('/pedidos', validacionjwt, (req, res) => {
             let order_idObj = await sequelize.query(`SELECT @@identity AS order_id from pedidos WHERE usuario_id = ${verificarToken.usuario_id} `,
                 { type: sequelize.QueryTypes.SELECT })
             let order_id = order_idObj[0].order_id;
-            
+
             for await (const element of pedido) {
 
                 sequelize.query('INSERT INTO `productos_pedidos` (order_id, producto_id, quantity) VALUES ( ?, ?, ?)',
@@ -316,7 +316,7 @@ app.post('/pedidos', validacionjwt, (req, res) => {
                     })
             }
 
-           
+
             await sequelize.query('INSERT INTO `estado_pedidos` (order_id, estado_id) VALUES (?, ?)',
                 {
                     replacements: [order_id, 1],
@@ -335,7 +335,7 @@ app.get('/pedidos', validacionjwt, validacionAdmin, async (req, res) => {
     const pedidosTotales = [];
     let pedidoIterado = [];
     try {
-        const pedidos = await sequelize.query('SELECT pedidos.order_id FROM pedidos',
+        const pedidos = await sequelize.query('SELECT pedidos.order_id FROM pedidos inner JOIN estado_pedidos ON pedidos.order_id = estado_pedidos.order_id WHERE estado_pedidos.estado_id < 6',
             {
                 type: sequelize.QueryTypes.SELECT
             })
@@ -379,39 +379,60 @@ app.get("/pedidos/:order_id", validacionjwt, async (req, res) => {
 
         if (verificarToken.administrador === 0) {
 
-            const pedido = await sequelize.query('SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_id INNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_id INNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_id INNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_id INNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = ? AND usuarios.usuario_id = ? GROUP BY pedidos.order_id',
+            const pedido = await sequelize.query('SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido, estado_pedidos.estado_id FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_id INNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_id INNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_id INNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_id INNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = ? AND usuarios.usuario_id = ? GROUP BY pedidos.order_id',
                 {
                     replacements: [order_id, verificarToken.usuario_id],
                     type: sequelize.QueryTypes.SELECT
                 })
-            if (pedido.length) {
-                const productosPedidos = await sequelize.query('SELECT productos.nombre_producto, productos.descripcion, productos_pedidos.quantity, productos.precio, (productos.precio*productos_pedidos.quantity) as precio_total FROM `productos` INNER JOIN `productos_pedidos` ON productos_pedidos.producto_id = productos.producto_id WHERE productos_pedidos.order_id = ?',
-                    {
-                        replacements: [order_id],
-                        type: sequelize.QueryTypes.SELECT
-                    }
-                )
-                const respuesta = [pedido, productosPedidos];
+                console.log(pedido)
+                console.log('pedido.length')
+                console.log(pedido.length)
+                if (pedido.length) {
 
-                res.status(200).json(respuesta);
+            if (pedido[0].estado_id != 6) {
+                console.log('Entro porque el pedido no estaba eliminado')
+
+                    const productosPedidos = await sequelize.query('SELECT productos.nombre_producto, productos.descripcion, productos_pedidos.quantity, productos.precio, (productos.precio*productos_pedidos.quantity) as precio_total FROM `productos` INNER JOIN `productos_pedidos` ON productos_pedidos.producto_id = productos.producto_id WHERE productos_pedidos.order_id = ?',
+                        {
+                            replacements: [order_id],
+                            type: sequelize.QueryTypes.SELECT
+                        }
+                    )
+                    const respuesta = [pedido, productosPedidos];
+
+                    res.status(200).json(respuesta);
+
+
+                } else {
+                    res.status(500).json(`El order id: ${order_id} se encuentra en estado eliminado`)
+                }
             } else {
                 res.status(500).json('El numero de pedido no corresponde al cliente')
+               
+
             }
+
         } else {
-            const pedido = await sequelize.query('SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_id INNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_id INNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_id INNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_id INNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = ?  GROUP BY pedidos.order_id',
+            const pedido = await sequelize.query('SELECT  pedidos.order_id, sum(productos.precio*productos_pedidos.quantity) as precio_total, pedidos.metodo_pago, pedidos.direccion, usuarios.nombrecompleto, usuarios.usuario_id, estados.estado_pedido, estado_pedidos.estado_id FROM `pedidos` INNER JOIN `usuarios` ON pedidos.usuario_id = usuarios.usuario_id INNER JOIN `estado_pedidos` ON estado_pedidos.order_id = pedidos.order_id INNER JOIN `productos_pedidos` ON productos_pedidos.order_id = pedidos.order_id INNER JOIN `productos` ON productos.producto_id = productos_pedidos.producto_id INNER JOIN `estados` ON estado_pedidos.estado_id = estados.estado_id  WHERE pedidos.order_id = ?  GROUP BY pedidos.order_id',
                 {
                     replacements: [order_id],
                     type: sequelize.QueryTypes.SELECT
                 })
-            if (pedido.length) {
-                const productosPedidos = await sequelize.query('SELECT productos.nombre_producto, productos.descripcion, productos_pedidos.quantity, productos.precio, (productos.precio*productos_pedidos.quantity) as precio_total FROM `productos` INNER JOIN `productos_pedidos` ON productos_pedidos.producto_id = productos.producto_id WHERE productos_pedidos.order_id = ?',
-                    {
-                        replacements: [order_id],
-                        type: sequelize.QueryTypes.SELECT
-                    }
-                )
-                const respuesta = [pedido, productosPedidos];
-                res.status(200).json(respuesta);
+                
+                if (pedido.length) {
+            if (pedido[0].estado_id != 6) {
+                    const productosPedidos = await sequelize.query('SELECT productos.nombre_producto, productos.descripcion, productos_pedidos.quantity, productos.precio, (productos.precio*productos_pedidos.quantity) as precio_total FROM `productos` INNER JOIN `productos_pedidos` ON productos_pedidos.producto_id = productos.producto_id WHERE productos_pedidos.order_id = ?',
+                        {
+                            replacements: [order_id],
+                            type: sequelize.QueryTypes.SELECT
+                        }
+                    )
+                    const respuesta = [pedido, productosPedidos];
+                    res.status(200).json(respuesta);
+                } else {
+                    res.status(500).json(`El order id: ${order_id} se encuentra en estado eliminado`)
+
+                }
             } else {
                 res.status(500).json('No existe el order_id seleccionado')
             }
@@ -459,6 +480,46 @@ app.patch('/pedidos/:order_id', validacionjwt, validacionAdmin, async (req, res)
     }
     else {
         res.status(500).json('Solo hay 5 estados');
+    }
+
+})
+
+app.delete('/pedidos/:order_id', validacionjwt, validacionAdmin, async (req, res) => {
+
+    const { eliminado } = req.query
+    let eliminadoBool = JSON.parse(eliminado.toLowerCase());
+    const { order_id } = req.params;
+
+    if (eliminadoBool === true) {
+        try {
+            let chequeoOrder = await sequelize.query('SELECT * FROM pedidos WHERE order_id = ?',
+                {
+                    replacements: [order_id],
+                    type: sequelize.QueryTypes.SELECT
+                })
+            if (!!chequeoOrder.length) {
+                await sequelize.query('UPDATE `estado_pedidos` SET estado_id = ? WHERE order_id = ?',
+                    {
+                        replacements: [6, order_id],
+                        type: sequelize.QueryTypes.UPDATE
+                    })
+
+                res.status(200).json(`Order ID: ${order_id} modificado a estado: CANCELADO`)
+            }
+            else {
+
+                res.status(500).json(`Orden ID: ${order_id} no existe.`)
+            }
+
+
+        } catch (error) {
+            console.log('catch')
+            res.status(400).send(error.original.sqlMessage);
+        }
+
+    }
+    else {
+        res.status(500).json('Parametro esperado eliminado=true');
     }
 
 })
