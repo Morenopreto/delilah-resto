@@ -1,6 +1,6 @@
 //////////DELILAH RESTO
 .Creado por: MORENO PRETO
-
+/////////ESPANOL
 Hola! Bienvenido a Deliah Resto.
 
 Antes de iniciar DELILAH RESTO usted debe considerar las siguientes pautas:
@@ -42,3 +42,46 @@ Antes de iniciar DELILAH RESTO usted debe considerar las siguientes pautas:
 
     -- CONSIDERACIONES
     . Para un uso mas rapido de los ENDPOINTS desde la creacion de la BD y sus respectivas tablas, se agregaron TRES productos.
+
+    ///////// SPANISH
+Hi! Welcome to Deliah Resto.
+
+Before starting DELILAH RESTO you should consider the following guidelines:
+    1) In case you don't have XAMPP installed, you must install it.
+-installer link:
+    https://www.apachefriends.org/es/index.html
+    
+    2) Once XAMPP is installed, start the application.
+    3) Inside XAMPP, in the APACHE and MySQL rows press START.
+    4) Once START is pressed in both rows, on the MySQL row press ADMIN
+    this will open the MySQL database manager in your browser.
+    
+    --DATABASE CREATION
+    1) Within the administrator, in the side navigation bar, you will find several options.
+    Click on the first option called NEW.
+    2) Inside the NEW option, on the top bar, press the second option called SQL.
+    3) Once inside SQL, open the DB.sql file that is next to the READ-ME file
+    4) Copy everything that is inside this file and return to the browser where you should paste the previously copied.
+    5) With the queries pasted, press the CONTINUE button located at the bottom right.
+    6) If you did not have any errors in the execution, the database and its relevant tables were created successfully.
+    7) Keep in mind that the administrator user has USER: admin and PASSWORD: admin.
+
+    - API & ENDPOINTS TEST - PORTFOLIO
+    1) You must have the desktop version of POSTMAN to be able to make the trial request.
+    2) Once the POSTMAN application is open, in the menu at the top left, press the IMPORT button.
+    3) Select the LINK option and paste the link that was proposed in the delivery.
+     the link should have a format similar to: https://www.getpostman.com/collections/1235454s445a
+    4) Press continue and then import collection.
+    5) You can now try the provided ENDPOINTS.
+    6) For those ENDPOINTS that require a token, it will be provided automatically once the
+    login using the corresponding ENDPOINT.
+
+    - EXECUTION DELILAH REST
+    1) Inside VS CODE open a new terminal.
+    2) Once inside the folder where the DELILAH RESTO project is located, run the code npm start
+    3) Check the console, it should read App running on port 3000.
+    4) In case of correctly verifying the previous option, you are ready to try DELILAH RESTO.
+
+
+    - CONSIDERATIONS
+    . For a faster use of the ENDPOINTS since the creation of the DB and its respective tables, THREE products were added.

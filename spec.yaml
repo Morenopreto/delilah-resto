@@ -353,3 +353,34 @@ paths:
       
         '500':
           description: Error.
+    delete:
+      tags:
+        - pedidos
+      summary: Soft Delete de pedidos existentes (ADMIN USERS)
+      security:
+        - bearerToken: []
+      parameters:
+        - name: order_id
+          in: path
+          description: ID de pedido.
+          required: true
+          schema:
+            type: integer  
+        - name: eliminado
+          in: query
+          example:  eliminado=true
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: El pedido con id {order_id} se modifico a estado CANCELADO.
+        '400':
+          description: El order ${order_id} no existe.
+      
+        '500':
+          description: Error.      
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/moreno-preto/delilahResto/1.0
